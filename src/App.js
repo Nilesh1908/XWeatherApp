@@ -7,26 +7,39 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const fetchWeather = async () => {
-  //const cityName = city.trim();
-  if (!city) return;
+  const cityName = city.trim().toLowerCase();
+  if (!cityName) return;
 
   setLoading(true);
   setWeatherData(null);
 
   try {
     const response = await fetch(
-      `https://api.weatherapi.com/v1/current.json?key=e1d17fd927164cbcbc243812240405&q=${city}`
+      `https://api.weatherapi.com/v1/current.json?key=e1d17fd927164cbcbc243812240405&q=${cityName}`
     );
 
-    if (!response.ok) {
-      // Response not ok (404, 401, etc.)
-      throw new Error("City not found or invalid API key");
+    const data = await response.json();
+
+    // 1. API returned internal error object
+    if (data.error) {
+      alert("Failed to fetch weather data");
+      setLoading(false);
+      return;
     }
 
-    const data = await response.json();
+    // 2. INVALID CITY CHECK – WeatherAPI sometimes returns fallback cities
+    const returnedCity = data.location.name.toLowerCase();
+
+    // If returned city doesn't include the search term, treat as invalid
+    if (!returnedCity.includes(cityName)) {
+      alert("Failed to fetch weather data");
+      setLoading(false);
+      return;
+    }
+
+    // 3. Valid city
     setWeatherData(data);
   } catch (error) {
-    console.error(error);
     alert("Failed to fetch weather data");
   } finally {
     setLoading(false);
