@@ -3,48 +3,58 @@ import "./index.css";
 
 function App() {
   const [city, setCity] = useState("");
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState({Temperature:"",Humidity:"",Condition:"",'Wind speed':""});
   const [loading, setLoading] = useState(false);
+
 
   const fetchWeather = async () => {
   const cityName = city.trim().toLowerCase();
   if (!cityName) return;
 
   setLoading(true);
-  setWeatherData(null);
+  //setWeatherData(null);
 
   try {
     const response = await fetch(
       `https://api.weatherapi.com/v1/current.json?key=e1d17fd927164cbcbc243812240405&q=${cityName}`
     );
 
-    const data = await response.json();
+     const data = await response.json();
+    //console.log(response);
+
+    const obj={
+          Temperature:data.current.temp_c,
+          Humidity:data.current.humidity,
+          Condition:data.current.condition.text,
+          'Wind speed':data.current.wind_kph
+        }
 
     // 1. API returned internal error object
-    if (data.error) {
-      alert("Failed to fetch weather data");
-      setLoading(false);
-      return;
-    }
+    // if (data.error) {
+    //   alert("Failed to fetch weather data");
+    //   setLoading(false);
+    //   return;
+    // }
 
     // 2. INVALID CITY CHECK – WeatherAPI sometimes returns fallback cities
-    const returnedCity = data.location.name.toLowerCase();
+    // const returnedCity = data.location.name.toLowerCase();
 
     // If returned city doesn't include the search term, treat as invalid
-    if (!returnedCity.includes(cityName)) {
-      alert("Failed to fetch weather data");
-      setLoading(false);
-      return;
-    }
+    // if (!returnedCity.includes(cityName)) {
+    //   alert("Failed to fetch weather data");
+    //   setLoading(false);
+    //   return;
+    // }
 
     // 3. Valid city
-    setWeatherData(data);
+    setWeatherData(obj);
   } catch (error) {
     alert("Failed to fetch weather data");
+    console.error("Error fetching weather data:", error);
   } finally {
     setLoading(false);
   }
-};
+}
 
   return (
     <div className="container">
@@ -60,28 +70,28 @@ function App() {
         <button onClick={fetchWeather}>Search</button>
       </div>
 
-      {loading && <p>Loading data…</p>}
+      {weatherData?.Temperature === '' && <p>Loading data…</p>}
 
-      {weatherData && (
+      {weatherData.Temperature !== '' && (
         <div className="weather-cards">
           <div className="weather-card">
             <h3>Temperature</h3>
-            <p>{weatherData.current.temp_c} °C</p>
+            <p>{weatherData.Temperature} °C</p>
           </div>
 
           <div className="weather-card">
             <h3>Humidity</h3>
-            <p>{weatherData.current.humidity} %</p>
+            <p>{weatherData.Humidity} %</p>
           </div>
 
           <div className="weather-card">
             <h3>Condition</h3>
-            <p>{weatherData.current.condition.text}</p>
+            <p>{weatherData.Condition}</p>
           </div>
 
           <div className="weather-card">
             <h3>Wind Speed</h3>
-            <p>{weatherData.current.wind_kph} kph</p>
+            <p>{weatherData["Wind speed"]} kph</p>
           </div>
         </div>
       )}
