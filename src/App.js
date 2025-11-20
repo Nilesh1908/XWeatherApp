@@ -7,15 +7,15 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const fetchWeather = async () => {
-  const cityName = city.trim();
-  if (!cityName) return;
+  //const cityName = city.trim();
+  if (!city) return;
 
   setLoading(true);
   setWeatherData(null);
 
   try {
     const response = await fetch(
-      `https://api.weatherapi.com/v1/current.json?key=b3776c8d27f1473dbf961047252011&q=${cityName}`
+      `https://api.weatherapi.com/v1/current.json?key=e1d17fd927164cbcbc243812240405&q=${city}`
     );
 
     if (!response.ok) {
