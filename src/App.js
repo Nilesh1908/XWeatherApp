@@ -70,7 +70,7 @@ function App() {
         <button onClick={fetchWeather}>Search</button>
       </div>
 
-      {weatherData?.Temperature === '' && <p>Loading data…</p>}
+      {weatherData?.Temperature === '' && <p>Loading data...</p>}
 
       {weatherData.Temperature !== '' && (
         <div className="weather-cards">
